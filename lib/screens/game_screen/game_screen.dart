@@ -1,6 +1,12 @@
 import 'package:auto_route/annotations.dart';
-import 'package:draw_straight_line_app/main.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:draw_straight_line_app/model/provider/shape_provider.dart';
+import 'package:draw_straight_line_app/screens/game_screen/draw_area_widget.dart';
+import 'package:draw_straight_line_app/screens/game_screen/smallShapes/circle_small.dart';
+import 'package:draw_straight_line_app/screens/game_screen/smallShapes/line_small.dart';
+import 'package:draw_straight_line_app/screens/game_screen/smallShapes/triangle_small.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 @RoutePage()
 class GameScreen extends StatelessWidget {
@@ -10,27 +16,49 @@ class GameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('write a STRAIGHT line'),
+        leading: NewShapeButton(),
+        title: const Text('Draw a STRAIGHT line'),
         centerTitle: true,
         actions: [
-          IconButton(icon: const Icon(Icons.arrow_back), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              context.router.pushPath('/profile');
+            },
+          ),
         ],
       ),
-      body: Center(
-        child: Container(
-          width: 200, // Length of the line
-          height: 10, // Thickness of the line
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(
-              255,
-              199,
-              199,
-              204,
-            ), // Color of the line
-            borderRadius: BorderRadius.circular(5), // Rounded edges
-          ),
-        ),
-      ),
+      body: SafeArea(child: Center(child: DrawAreaWidget())),
+    );
+  }
+}
+
+class NewShapeButton extends StatelessWidget {
+  const NewShapeButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: () {
+        switch (context.watch<ShapeProvider>().activeShapeIndex) {
+          case 0:
+            return const LineSmall();
+          case 1:
+            return const CircleSmall();
+          case 2:
+            return const TriangleSmall();
+          case 3:
+            return const Icon(Icons.square);
+          default:
+            return const LineSmall();
+        }
+      }(),
+      onPressed: () {
+        context.read<ShapeProvider>().changeActiveShape();
+        print(
+          'Active shape index: ${context.read<ShapeProvider>().activeShapeIndex}',
+        );
+      },
     );
   }
 }

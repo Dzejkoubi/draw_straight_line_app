@@ -6,7 +6,9 @@ import 'package:draw_straight_line_app/screens/game_screen/game_screen.dart';
 class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(page: GameRoute.page, initial: true),
-    AutoRoute(page: ProfileRoute.page),
+    AutoRoute(path: '/', page: GameRoute.page, initial: true),
+    AutoRoute(path: '/profile', page: ProfileRoute.page),
+    AutoRoute(path: '/profile/settings', page: SettingsRoute.page),
+    AutoRoute(path: '*', page: NotFoundRoute.page),
   ];
 }
