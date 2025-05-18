@@ -138,7 +138,43 @@ class _UserBoardState extends State<UserBoard>
                           },
                         ),
                       ),
-                      Expanded(child: Container()),
+                      Expanded(
+                        child: AnimatedBuilder(
+                          animation: _controller,
+                          builder: (context, child) {
+                            return Transform(
+                              alignment: Alignment.center,
+                              transform:
+                                  Matrix4.identity()
+                                    ..scale(1.0, _scaleYAnimation.value, 1.0),
+                              child: Container(
+                                margin: const EdgeInsets.all(10),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 32,
+                                  horizontal: 16,
+                                ),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD2E4FF),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      offset: const Offset(0, 3),
+                                      blurRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  'Curve',
+                                  style: const TextStyle(color: Colors.black),
+                                  maxLines: 1,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ],
