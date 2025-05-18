@@ -12,6 +12,8 @@ class RateUsContainer extends StatefulWidget {
 class _RateUsContainerState extends State<RateUsContainer> {
   List<bool> isStarred = [false, false, false, false, false];
 
+  bool _showButton = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,6 +44,7 @@ class _RateUsContainerState extends State<RateUsContainer> {
                           }
                         }
                       }
+                      _showButton = isStarred.contains(true);
                     });
                   },
                   icon: TweenAnimationBuilder<double>(
@@ -76,10 +79,25 @@ class _RateUsContainerState extends State<RateUsContainer> {
                     },
                   ),
                 ),
+
               Expanded(
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text('Send', style: TextStyle(color: Colors.blueGrey)),
+                child: IgnorePointer(
+                  ignoring: !_showButton,
+                  child: AnimatedOpacity(
+                    // key: ValueKey<bool>(_showButton),
+                    opacity: _showButton ? 1 : 0,
+                    duration: Duration(milliseconds: 300),
+                    child: TextButton(
+                      // key: ValueKey<bool>(_showButton),
+                      onPressed: () {
+                        //TODO: Send feedback
+                      },
+                      child: Text(
+                        'Send',
+                        style: TextStyle(color: Colors.blueGrey),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

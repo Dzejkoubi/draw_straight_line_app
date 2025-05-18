@@ -2,7 +2,6 @@ import 'dart:math' as Math;
 
 import 'package:auto_route/auto_route.dart';
 import 'package:draw_straight_line_app/screens/profile_screen/widgets/rate_us_container.dart';
-import 'package:draw_straight_line_app/screens/profile_screen/widgets/rotating_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -36,23 +35,47 @@ class UserBoard extends StatefulWidget {
   State<UserBoard> createState() => _UserBoardState();
 }
 
-class _UserBoardState extends State<UserBoard> with TickerProviderStateMixin {
-  late AnimationController _rotateAnimationController;
-  // late Animation<double> _curvedRotateAnimation = CurvedAnimation(
-  //   parent: _rotateAnimationController,
-  //   curve: Curves.easeOut,
-  // );
+class _UserBoardState extends State<UserBoard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleYAnimation;
+
+  bool _onFirst = true;
 
   @override
   void initState() {
-    _rotateAnimationController = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync: this,
-    )..repeat();
-
-    _rotateAnimationController.repeat();
-
     super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+
+    _scaleYAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _controller.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        setState(() => _onFirst = !_onFirst);
+        _controller.forward();
+      }
+    });
+
+    // _controller.addListener(() {
+    //   print('Animation value: ${_scaleYAnimation.value}');
+    // });
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -74,9 +97,48 @@ class _UserBoardState extends State<UserBoard> with TickerProviderStateMixin {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RotationWidget(
-                        rotateAnimationController: _rotateAnimationController,
+                      Expanded(
+                        child: AnimatedBuilder(
+                          animation: _controller,
+                          builder: (context, child) {
+                            final atMin = _scaleYAnimation.value < 0.5;
+                            return Transform(
+                              alignment: Alignment.center,
+                              transform:
+                                  Matrix4.identity()
+                                    ..scale(1.0, _scaleYAnimation.value, 1.0),
+                              child: Container(
+                                margin: const EdgeInsets.all(10),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 32,
+                                  horizontal: 16,
+                                ),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color:
+                                      _onFirst
+                                          ? const Color(0xFFD2E4FF)
+                                          : const Color(0xFFF1D9FF),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      offset: const Offset(0, 3),
+                                      blurRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  _onFirst ? 'Tween' : 'Animation Controller',
+                                  style: const TextStyle(color: Colors.black),
+                                  maxLines: 1,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
+                      Expanded(child: Container()),
                     ],
                   ),
                 ],
@@ -87,47 +149,4 @@ class _UserBoardState extends State<UserBoard> with TickerProviderStateMixin {
       },
     );
   }
-
-  @override
-  void dispose() {
-    _rotateAnimationController.dispose();
-    super.dispose();
-  }
 }
-
-// class SquashBoxTween extends StatefulWidget {
-//   final Widget child;
-//   const SquashBoxTween({super.key, required this.child});
-
-//   @override
-//   State<SquashBoxTween> createState() => _SquashBoxTweenState();
-// }
-
-// class _SquashBoxTweenState extends State<SquashBoxTween> {
-//   bool _squashed = false;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         ElevatedButton(
-//           child: Text(_squashed ? 'Un-squash' : 'Squash'),
-//           onPressed: () => setState(() => _squashed = !_squashed),
-//         ),
-//         TweenAnimationBuilder<double>(
-//           tween: Tween(begin: 1.0, end: _squashed ? 0.0 : 1.0),
-//           duration: const Duration(milliseconds: 300),
-//           curve: Curves.easeInOut,
-//           builder: (context, scaleY, child) {
-//             return Transform(
-//               alignment: Alignment.center,
-//               transform: Matrix4.diagonal3Values(1, scaleY, 1),
-//               child: child,
-//             );
-//           },
-//           child: widget.child,
-//         ),
-//       ],
-//     );
-//   }
-// }
