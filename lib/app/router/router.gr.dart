@@ -18,6 +18,7 @@ import 'package:draw_straight_line_app/screens/profile_screen/profile_screen.dar
     as _i3;
 import 'package:draw_straight_line_app/screens/settings_screen/settings_screen.dart'
     as _i4;
+import 'package:flutter/material.dart' as _i6;
 
 /// generated route for
 /// [_i1.GameScreen]
@@ -53,18 +54,36 @@ class NotFoundRoute extends _i5.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.ProfileScreen]
-class ProfileRoute extends _i5.PageRouteInfo<void> {
-  const ProfileRoute({List<_i5.PageRouteInfo>? children})
-    : super(ProfileRoute.name, initialChildren: children);
+class ProfileRoute extends _i5.PageRouteInfo<ProfileRouteArgs> {
+  ProfileRoute({_i6.Key? key, List<_i5.PageRouteInfo>? children})
+    : super(
+        ProfileRoute.name,
+        args: ProfileRouteArgs(key: key),
+        initialChildren: children,
+      );
 
   static const String name = 'ProfileRoute';
 
   static _i5.PageInfo page = _i5.PageInfo(
     name,
     builder: (data) {
-      return const _i3.ProfileScreen();
+      final args = data.argsAs<ProfileRouteArgs>(
+        orElse: () => const ProfileRouteArgs(),
+      );
+      return _i3.ProfileScreen(key: args.key);
     },
   );
+}
+
+class ProfileRouteArgs {
+  const ProfileRouteArgs({this.key});
+
+  final _i6.Key? key;
+
+  @override
+  String toString() {
+    return 'ProfileRouteArgs{key: $key}';
+  }
 }
 
 /// generated route for
